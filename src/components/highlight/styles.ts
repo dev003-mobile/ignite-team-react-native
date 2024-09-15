@@ -4,6 +4,7 @@ export const Container = styled.View({
    width: "100%",
    alignItems: "center",
    paddingTop: 30,
+   marginBottom: 40,
    justifyContent: "center",
 })
 

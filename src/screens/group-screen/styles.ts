@@ -8,6 +8,5 @@ export const Container = styled.View(({ theme }) => ({
 
 export const GroudCardList = styled.FlatList({
    flex: 1,
-   paddingTop: 40,
-   paddingBottom: 10,
+   marginBottom: 10,
 })
