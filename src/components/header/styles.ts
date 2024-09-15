@@ -1,13 +1,14 @@
 import { CaretLeft } from "phosphor-react-native"
 import { styled } from "styled-components/native"
+import { TouchableOpacityProps } from "react-native"
 
-type HeaderType = "PRIMARY" | "SECONDARY"
+export type HeaderType = "PRIMARY" | "SECONDARY"
 
-export interface HeaderProps {
+interface HeaderStyleProps {
    type?: HeaderType
 }
 
-export const Container = styled.View<HeaderProps>(({ type }) => ({
+export const Container = styled.View<HeaderStyleProps>(({ type }) => ({
    width: "100%",
    flexDirection: "row",
    alignItems: "center",

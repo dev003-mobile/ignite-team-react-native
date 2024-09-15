@@ -1,12 +1,17 @@
 import logo from "@assets/logo.png"
 import { TouchableOpacity } from "react-native"
-import { Container, Logo, BackButton, HeaderProps } from './styles'
+import { TouchableOpacityProps } from "react-native"
+import { Container, Logo, BackButton, HeaderType } from './styles'
 
-export function Header({ type = "PRIMARY" } : HeaderProps) {
+type HeaderProps = TouchableOpacityProps & {
+   type?: HeaderType
+}
+
+export function Header({ type = "PRIMARY", ...rest } : HeaderProps) {
    return (
       <Container type={type}>
          { type === "SECONDARY" &&
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity {...rest}>
                <BackButton />
             </TouchableOpacity>
          }

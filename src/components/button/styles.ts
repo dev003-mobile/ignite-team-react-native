@@ -1,9 +1,8 @@
 import { styled } from "styled-components/native"
-import { TouchableOpacityProps } from "react-native"
 
 export type ButtonType = "PRIMARY" | "SECONDARY"
 
-export type ButtonStyleProps = {
+type ButtonStyleProps = {
    type?: ButtonType
 }
 
