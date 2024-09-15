@@ -1,19 +1,19 @@
 import { TextInputProps } from "react-native"
 import { TouchableOpacity } from "react-native"
-import { TouchableOpacityProps } from "react-native"
 import { Container, InputText, AddIcon } from "./styles"
 
-type InputProps = TouchableOpacityProps & TextInputProps & {
+type InputProps = TextInputProps & {
    showButtonAdd?: boolean
+   onPress?: () => void
 }
 
-export function Input({ showButtonAdd = false, ...rest } : InputProps) {
+export function Input({ showButtonAdd = false, onPress, ...rest } : InputProps) {
    return (
-      <Container>
-         <InputText {...rest} />
+      <Container showAddButton={showButtonAdd}>
+         <InputText autoCorrect={false} showAddButton={showButtonAdd} {...rest} />
 
          { showButtonAdd &&
-            <TouchableOpacity {...rest}>
+            <TouchableOpacity onPress={onPress}>
                <AddIcon />
             </TouchableOpacity>
          }

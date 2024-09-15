@@ -1,13 +1,14 @@
+import { ViewProps } from "react-native"
 import { Container, Title, Subtitle } from "./styles"
 
-interface HighlightProps {
+type HighlightProps = ViewProps & {
    title: string
    subtitle: string
 }
 
-export function Highlight({ title, subtitle } : HighlightProps) {
+export function Highlight({ title, subtitle, ...rest } : HighlightProps) {
    return (
-      <Container>
+      <Container {...rest}>
          <Title> { title } </Title>
          <Subtitle> { subtitle } </Subtitle>
       </Container>
