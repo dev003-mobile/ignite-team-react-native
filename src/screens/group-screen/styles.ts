@@ -5,3 +5,9 @@ export const Container = styled.View(({ theme }) => ({
    padding: 24,
    backgroundColor: theme.COLORS.GRAY_600
 }))
+
+export const GroudCardList = styled.FlatList({
+   flex: 1,
+   paddingTop: 40,
+   paddingBottom: 10,
+})
