@@ -5,9 +5,12 @@ import { Highlight } from "@components/highlight"
 import { GroupCard } from "@components/group-card"
 import { Button } from "@components/button"
 import { ListEmpty } from "@components/list-empty"
+import { useNavigation } from "@react-navigation/native"
 
 export function GroupScreen() {
-   const [groups, setGroups] = useState<Array<string>>([])
+   const [groups, _] = useState<Array<string>>([])
+
+   const { navigate } = useNavigation()
 
    return (
       <Container>
@@ -27,7 +30,7 @@ export function GroupScreen() {
          </GroudCardList>
 
          <Button
-            onPress={() => {}}
+            onPress={() => navigate("/new-group-screen")}
             title="Criar nova turma"
          />
       </Container>

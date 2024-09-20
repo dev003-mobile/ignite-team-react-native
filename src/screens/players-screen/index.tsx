@@ -1,18 +1,27 @@
 import { useState } from "react"
 import { Alert, Keyboard } from "react-native"
-import { Button } from "@components/button"
-import { Header } from "@components/header"
-import { Highlight } from "@components/highlight"
-import { Input } from "@components/input"
-import { Filter } from "@components/filter"
-import { GroupParticipant } from "@components/group-participant"
+import { useRoute } from "@react-navigation/native"
+
 import { Container, GroudParticipantsList, ContainerFilter, ContentFilter, CounterText } from "./styles"
+
+import { Input } from "@components/input"
+import { Header } from "@components/header"
+import { Filter } from "@components/filter"
+import { Button } from "@components/button"
+import { Highlight } from "@components/highlight"
 import { ListEmpty } from "@components/list-empty"
+import { GroupParticipant } from "@components/group-participant"
+
+type RouteParamsProps = {
+   className: string
+}
 
 export function PlayersScreen() {
    const [team, setTeam] = useState<string>("TIME A")
    const [participantName, setParticipantName] = useState<string>("")
    const [groupParticipant, setGroupParticipant] = useState<Array<string>>([])
+
+   const { className } = useRoute().params as RouteParamsProps
 
    function handleAddParticipant(particiapant: string) {
       Keyboard.dismiss()
@@ -54,7 +63,7 @@ export function PlayersScreen() {
       <Container>
          <Header type="SECONDARY"/>
          <Highlight
-            title="Nome da turma"
+            title={className}
             subtitle="Adicione a galera e separe os times"
             style={{paddingTop: 50}}
          />
