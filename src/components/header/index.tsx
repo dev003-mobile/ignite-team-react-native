@@ -9,12 +9,12 @@ type HeaderProps = TouchableOpacityProps & {
 }
 
 export function Header({ type = "PRIMARY", ...rest } : HeaderProps) {
-   const { goBack } = useNavigation()
+   const { navigate } = useNavigation()
 
    return (
       <Container type={type}>
          { type === "SECONDARY" &&
-            <TouchableOpacity {...rest} onPress={() => goBack()}>
+            <TouchableOpacity {...rest} onPress={() => navigate("/groups-screen")}>
                <BackButton />
             </TouchableOpacity>
          }

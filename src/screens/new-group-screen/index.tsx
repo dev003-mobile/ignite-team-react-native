@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Alert, Keyboard } from "react-native"
 
 import { Container, ContentContainer, Icon } from "./styles"
+import { classCreate } from "@storage/class-storage/create-class"
 
 import { Input } from "@components/input"
 import { Button } from "@components/button"
@@ -13,7 +14,7 @@ export function NewGroupScreen() {
    const [className, setClassName] = useState<string>("")
    const { navigate } = useNavigation()
 
-   function handleCreateClassName(className: string) {
+   async function handleCreateClassName(className: string) {
       Keyboard.dismiss()
 
       if (className.length === 0) {
@@ -28,7 +29,13 @@ export function NewGroupScreen() {
             ]
          )
       }
-      return navigate("/players-screen", {className: className})
+      
+      try {
+         await classCreate(className)
+         return navigate("/players-screen", {className: className})
+      } catch (error) {
+         throw error
+      }
    }
 
    return (
