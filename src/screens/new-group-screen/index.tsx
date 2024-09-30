@@ -9,6 +9,7 @@ import { Button } from "@components/button"
 import { Header } from "@components/header"
 import { Highlight } from "@components/highlight"
 import { useNavigation } from "@react-navigation/native"
+import { AppError } from "@utils/errors/app-error"
 
 export function NewGroupScreen() {
    const [className, setClassName] = useState<string>("")
@@ -17,7 +18,7 @@ export function NewGroupScreen() {
    async function handleCreateClassName(className: string) {
       Keyboard.dismiss()
 
-      if (className.length === 0) {
+      if (className.trim().length === 0) {
          return Alert.alert(
             "Inválido",
             "Informe obrigatoriamente o nome da turma!",
@@ -29,12 +30,16 @@ export function NewGroupScreen() {
             ]
          )
       }
-      
+
       try {
          await classCreate(className)
          return navigate("/players-screen", {className: className})
       } catch (error) {
-         throw error
+         if (error instanceof AppError) {
+            return Alert.alert("Nova classe", error.message)
+         } else {
+            return Alert.alert("Nova classe", "Não foi possível criar uma nova classe")
+         }
       }
    }
 

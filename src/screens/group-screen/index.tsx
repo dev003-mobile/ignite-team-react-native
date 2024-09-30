@@ -36,8 +36,11 @@ export function GroupScreen() {
             data={classes}
             showsVerticalScrollIndicator={false}
             renderItem={(group) => <GroupCard
-               title={group.item as string}
                key={group.index}
+               onPress={() => navigate("/players-screen", {
+                  className: group.item as string
+               })}
+               title={group.item as string}
             />}
             contentContainerStyle={classes.length === 0 && {flex: 0.8}}
             ListEmptyComponent={() => <ListEmpty title="Cadastre uma nova turma"/>}

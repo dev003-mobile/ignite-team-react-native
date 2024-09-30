@@ -1,8 +1,11 @@
 import { useState } from "react"
+import { useCallback } from "react"
 import { Alert, Keyboard } from "react-native"
-import { useRoute } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
+import { useFocusEffect } from "@react-navigation/native"
 
 import { Container, GroudParticipantsList, ContainerFilter, ContentFilter, CounterText } from "./styles"
+
 
 import { Input } from "@components/input"
 import { Header } from "@components/header"
@@ -10,7 +13,14 @@ import { Filter } from "@components/filter"
 import { Button } from "@components/button"
 import { Highlight } from "@components/highlight"
 import { ListEmpty } from "@components/list-empty"
+import { AppError } from "@utils/errors/app-error"
 import { GroupParticipant } from "@components/group-participant"
+import { PlayerDTO } from "@storage/player-storage/dto/player-dto"
+import { deletePlayerByTeam } from "@storage/player-storage/delete-player-by-team"
+import { getAllPlayersByClassName } from "@storage/player-storage/get-players-by-class"
+import { createPlayerByClassName } from "@storage/player-storage/create-player-by-class"
+import { deleteParticipantsByTeam } from "@storage/player-storage/delete-class"
+import { deleteClassName } from "@storage/class-storage/delete-class"
 
 type RouteParamsProps = {
    className: string
@@ -19,14 +29,15 @@ type RouteParamsProps = {
 export function PlayersScreen() {
    const [team, setTeam] = useState<string>("TIME A")
    const [participantName, setParticipantName] = useState<string>("")
-   const [groupParticipant, setGroupParticipant] = useState<Array<string>>([])
+   const [allPlayersByTeam, setAllPlayersByTeam] = useState<Array<PlayerDTO>>([])
 
+   const { navigate } = useNavigation()
    const { className } = useRoute().params as RouteParamsProps
 
-   function handleAddParticipant(particiapant: string) {
+   async function handleAddParticipant(particiapant: string) {
       Keyboard.dismiss()
 
-      if (particiapant.length === 0) {
+      if (particiapant.trim().length === 0) {
          return Alert.alert(
             "Inválido",
             "Informe obrigatoriamente o nome de um particiapante!",
@@ -39,25 +50,57 @@ export function PlayersScreen() {
          )
       }
 
-      return Alert.alert(
-         "Particiapante adicionado",
-         `O particiapante ´${particiapant}´ foi adicionado com sucesso na lista de ${groupParticipant.length} ${groupParticipant.length === 1 ? 'participante' : 'participantes'} actualmente.`,
-         [
-            {
-               text: "Ok",
-               style: "default",
-               onPress: () => {
-                  setGroupParticipant((prevState) => [...prevState, particiapant])
-                  setParticipantName("")
-               }
-            }
-         ]
-      )
+      const newPlayer: PlayerDTO = {
+         name: particiapant,
+         team: team
+      }
+
+      try {
+         await createPlayerByClassName(className, newPlayer)
+         const allPlayers: Array<PlayerDTO> = await getAllPlayersByClassName(className)
+         setAllPlayersByTeam(allPlayers.filter((player) => player.team === team))
+         setParticipantName("")
+      } catch (error) {
+         if (error instanceof AppError) {
+            return Alert.alert("Falha ao adicionar", error.message)
+         } else {
+            return Alert.alert("Falha", "Não foi possível adicionar um novo participante")
+         }
+      }
    }
 
-   function handleRemoveParticipant(index: number) {
-      setGroupParticipant((prevState) => prevState.filter((_, pk) => pk !== index))
+   async function handleGetAllPlayersByTeam() : Promise<any> {
+      try {
+         const allPlayersByClassName: Array<PlayerDTO> = await getAllPlayersByClassName(className)
+         const allPlayersByTeam: Array<PlayerDTO> = allPlayersByClassName.filter((players) => players.team === team)
+         setAllPlayersByTeam(allPlayersByTeam)
+      } catch (error) {
+         Alert.alert("Falha", "Não foi possivel buscar os participantes por team")
+      }
    }
+
+   async function handleRemoveParticipant(player: PlayerDTO) {
+      try {
+         const allPlayers: Array<PlayerDTO> = await deletePlayerByTeam(className, player)
+         setAllPlayersByTeam(allPlayers)
+      } catch (error) {
+         Alert.alert("Falha", "Não foi possivel buscar os participantes")
+      }
+   }
+
+   async function handleDeleteClassNameAndParticipants(className: string) {
+      try {
+         await deleteParticipantsByTeam(className)
+         await deleteClassName(className)
+         navigate("/groups-screen")
+      } catch (error) {
+         Alert.alert("Falha", "Não foi possivel apagar a classe")
+      }
+   }
+
+   useFocusEffect(useCallback(() => {
+      handleGetAllPlayersByTeam()
+   }, [team]))
 
    return (
       <Container>
@@ -89,23 +132,23 @@ export function PlayersScreen() {
                />
             </ContentFilter>
 
-            <CounterText> {groupParticipant.length} </CounterText>
+            <CounterText> {allPlayersByTeam.length} </CounterText>
          </ContainerFilter>
 
          <GroudParticipantsList
-            data={groupParticipant}
+            data={allPlayersByTeam}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => <GroupParticipant
-               title={item as string}
-               onPress={() => handleRemoveParticipant(index)}
+               title={(item as PlayerDTO).name}
+               onPress={() => handleRemoveParticipant(item as PlayerDTO)}
             />}
-            contentContainerStyle={groupParticipant.length === 0 && {flex: 1, paddingBottom: 100}}
+            contentContainerStyle={allPlayersByTeam.length === 0 && {flex: 1, paddingBottom: 100}}
             ListEmptyComponent={() => <ListEmpty title="Que tal adicionar um participante?"/>}
          >
          </GroudParticipantsList>
 
          <Button
-            onPress={() => {}}
+            onPress={() => handleDeleteClassNameAndParticipants(className)}
             type="SECONDARY"
             title="Remover turma"
          />
